@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Embed video</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <style>
+            .player{
+                width: 80vw;
+                display: inline-block;
+
+            }
+            video{
+                width: 90vw;
+                margin-left: 7%;
+            }
+            .controls{
+                visibility: visible;
+                width:100vw;
+                position: relative;
+                display:flex;
+                flex-direction: column;
+                margin-top: -8%;
+                margin-left: 8%;
+            }
+            .progress_bar{
+                width: 88vw;
+                height: 1vh;
+                border: 1px solid black;
+            }
+            .progress_filled{
+                width: 0;
+                background-color:white; height: inherit;
+                display: flex;
+                flex-basis: 12%;
+            }
+            .controls:hover{
+                visibility: visible;
+            }
+            .items{
+                margin-top: 2vh;
+                width: 85vw;
+                display: flex;
+                flex-direction: row; 
+            }
+            .play_button{
+                flex-grow: 1;
+            }
+            .volume,.play_speed{
+                flex-grow: 3;
+            }
+            .rewind,.fast_forward{
+                flex-grow: 1.2;
+            }
+
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class = "player">
+                <video>
+                    <source src="sintel-short.mp4" type="video/mp4">
+                    <source src="sintel-short.webm" type="video/webm">
+                        <!-- fallback content here -->
+                </video>    
+                <div class="controls">
+                    <div class="progress_bar">
+                        <div class="progress_filled" name="progress-width"></div>
+                    </div>
+                    <div class="items">
+                        <button  class="play_button toggle" data-icon="play" title="Toggle Play"> &#9658; </button>
+                        <input class="volume" title="volume" type="range" min="0" max="1" step="0.05">
+                        <input class="play_speed" title="play speed" type="range" min="0.5" max="2" step="0.1">
+                        <button class="rewind"> << 10sec </button>
+                        <button class="fast_forward"> 25sec >> </button>
+                    </div>
+                </div>
+        </div>
+        <script>
+                const media = document.querySelector('video');
+                //play & pause
+                var tgl_btn = document.querySelector('.play_button');
+                tgl_btn.addEventListener('click', playPause);
+                var play_flag = '&#9658;';
+                    function playPause(event){
+                        if(tgl_btn.getAttribute('data-icon') === "play"){
+                            tgl_btn.setAttribute('data-icon',"pause");
+                            tgl_btn.innerHTML = `&#9616;&#9616;`;
+                            media.play();
+                        }
+
+                        else if(tgl_btn.getAttribute('data-icon') === "pause"){
+                            tgl_btn.setAttribute('data-icon',"play");
+                            tgl_btn.innerHTML = `&#9658;`;
+                            media.pause();
+                        }
+                    }
+                    //playback speed
+                    var playSpeed = document.querySelector('.play_speed');
+                    playSpeed.addEventListener('change',triggerSpeed);
+
+                    function triggerSpeed(event){
+                        media.playbackRate = event.target.value;
+                    }
+                    var volume = document.querySelector('.volume');
+                    volume.addEventListener('change',triggerVolume);
+
+                    function triggerVolume(event){
+                        media.volume = event.target.value;
+                    }
+
+                    var fastFrwd = document.querySelector('.fast_forward');
+                    fastFrwd.addEventListener('click',fastForward);
+
+                    function fastForward(event){
+                        console.log(media.currentTime +" "+ event.target.value);
+                        media.currentTime = media.currentTime+25;
+                    }
+                    var bakwd = document.querySelector('.rewind');
+                    bakwd.addEventListener('click',playRewind);
+
+                    function playRewind(event){
+                        media.currentTime = media.currentTime-10;
+                    }
+                    var progress =   document.querySelector('.progress_filled');
+                    media.addEventListener('timeupdate',progressBar)
+                    function progressBar(){
+                        const per = (media.currentTime / media.duration)*100;
+                        progress.style.width = `${per}%`;
+
+                    }
+                    function scrub(e){
+                        var scrubTime = (e.offsetX/progress.offsetWidth)*media.duration;
+                        media.currentTime = scrubTime;
+                    }
+                    progress.addEventListener('click',scrub);
+        </script>
+    </body>
+</html>
